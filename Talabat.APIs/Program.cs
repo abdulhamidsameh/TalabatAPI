@@ -21,13 +21,13 @@ namespace Talabat.APIs
 			webApplicationBuilder.Services.AddSwaggerGen();
 			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
 			{
-				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
+				options.UseLazyLoadingProxies().UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
 			webApplicationBuilder.Services.AddScoped(
-				typeof(IGenricRepository<>),typeof(GenericRepository<>)
+				typeof(IGenricRepository<>), typeof(GenericRepository<>)
 				);
-
+			//webApplicationBuilder.Services.AddScoped<IGenricRepository<Product>, GenericRepository<Product>>();
 			#endregion
 
 

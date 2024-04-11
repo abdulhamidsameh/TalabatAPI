@@ -15,13 +15,20 @@ namespace Talabat.Repostiory
 		private readonly StoreContext _dbContext;
 
 		public GenericRepository(StoreContext dbContext)
-        {
+		{
 			_dbContext = dbContext;
 		}
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+		public async Task<IEnumerable<T>> GetAllAsync()
 		{
-			return await _dbContext.Set<T>().ToListAsync();
+			if (typeof(T) == typeof(Product))
+			{
+				return (IEnumerable<T>) await _dbContext.Set<Product>().Include(P => P.Brand).Include(P => P.Category).ToListAsync();
+			}
+			else
+			{
+				return await _dbContext.Set<T>().ToListAsync();
+			}
 		}
 
 		public async Task<T?> GetAsync(int id)

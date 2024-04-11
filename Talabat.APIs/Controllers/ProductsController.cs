@@ -5,13 +5,20 @@ using Talabat.Core.Repositories.Contract;
 
 namespace Talabat.APIs.Controllers
 {
-	public class ProductController : BaseApiController
+	public class ProductsController : BaseApiController
 	{
 		private readonly IGenricRepository<Product> _productRepo;
 
-		public ProductController(IGenricRepository<Product> productRepo)
-        {
+		public ProductsController(IGenricRepository<Product> productRepo)
+		{
 			_productRepo = productRepo;
 		}
-    }
+
+		[HttpGet]
+		public async Task<IActionResult> GetProducts()
+		{
+			var products = await _productRepo.GetAllAsync();
+			return Ok(products);
+		}
+	}
 }
