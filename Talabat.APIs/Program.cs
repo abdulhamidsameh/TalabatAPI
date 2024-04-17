@@ -6,6 +6,7 @@ using Talabat.Repostiory.Data;
 
 namespace Talabat.APIs
 {
+	// Onion Architecture Layers Naming
 	public class Program
 	{
 		public static async Task Main(string[] args)
