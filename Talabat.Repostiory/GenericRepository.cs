@@ -22,7 +22,7 @@ namespace Talabat.Repostiory
 
 		public async Task<IEnumerable<T>> GetAllAsync()
 		{
-				return await _dbContext.Set<T>().ToListAsync();
+			return await _dbContext.Set<T>().ToListAsync();
 		}
 
 		public async Task<T?> GetAsync(int id)
@@ -39,7 +39,7 @@ namespace Talabat.Repostiory
 		{
 			return await ApplySecification(spec).ToListAsync();
 		}
-		private IQueryable<T> ApplySecification(ISpecifications<T> spec) 
+		private IQueryable<T> ApplySecification(ISpecifications<T> spec)
 		{
 			return SpecifactionsEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);
 		}
