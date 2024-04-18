@@ -30,7 +30,8 @@ namespace Talabat.APIs
 				typeof(IGenricRepository<>), typeof(GenericRepository<>)
 				);
 			//webApplicationBuilder.Services.AddScoped<IGenricRepository<Product>, GenericRepository<Product>>();
-			webApplicationBuilder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfile()));
+
+			webApplicationBuilder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfile(webApplicationBuilder.Configuration)));
 			#endregion
 
 
