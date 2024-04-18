@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
+using Talabat.Core.Specifications;
 using Talabat.Repostiory.Data;
 
 namespace Talabat.Repostiory
@@ -21,19 +22,26 @@ namespace Talabat.Repostiory
 
 		public async Task<IEnumerable<T>> GetAllAsync()
 		{
-			if (typeof(T) == typeof(Product))
-			{
-				return (IEnumerable<T>) await _dbContext.Set<Product>().Include(P => P.Brand).Include(P => P.Category).ToListAsync();
-			}
-			else
-			{
-				return await _dbContext.Set<T>().ToListAsync();
-			}
+			return await _dbContext.Set<T>().ToListAsync();
 		}
 
 		public async Task<T?> GetAsync(int id)
 		{
 			return await _dbContext.Set<T>().FindAsync(id);
+		}
+
+		public async Task<T?> GetwithSpecAsync(ISpecifications<T> spec)
+		{
+			return await ApplySecification(spec).FirstOrDefaultAsync();
+		}
+
+		public async Task<IEnumerable<T>> GetAllWithSpecAsync(ISpecifications<T> spec)
+		{
+			return await ApplySecification(spec).ToListAsync();
+		}
+		private IQueryable<T> ApplySecification(ISpecifications<T> spec)
+		{
+			return SpecifactionsEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);
 		}
 	}
 }
