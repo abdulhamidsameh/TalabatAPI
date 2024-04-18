@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Errors;
 using Talabat.Core.Entities;
@@ -29,6 +30,8 @@ namespace Talabat.APIs.Controllers
 			return Ok(_mapper.Map<IEnumerable<Product>, IEnumerable<ProductToReturnDto>>(products));
 		}
 
+		[ProducesResponseType(typeof(ProductToReturnDto),StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResponse),StatusCodes.Status404NotFound)]
 		[HttpGet("{id}")]
 		public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
 		{
