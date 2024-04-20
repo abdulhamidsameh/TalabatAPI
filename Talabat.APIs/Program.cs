@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;
 using Talabat.APIs.Errors;
+using Talabat.APIs.Extensions;
 using Talabat.APIs.Helper;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities;
@@ -21,39 +22,22 @@ namespace Talabat.APIs
 			var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
 			#region Configre Services
+
 			// Add services to the container.
 
 			webApplicationBuilder.Services.AddControllers();
-			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-			webApplicationBuilder.Services.AddEndpointsApiExplorer();
-			webApplicationBuilder.Services.AddSwaggerGen();
+
+			webApplicationBuilder.Services.AddSwaggerServices();
+		
 			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
 			{
 				options.UseLazyLoadingProxies().UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
-			webApplicationBuilder.Services.AddScoped(
-				typeof(IGenricRepository<>), typeof(GenericRepository<>)
-				);
-			//webApplicationBuilder.Services.AddScoped<IGenricRepository<Product>, GenericRepository<Product>>();
-
 			webApplicationBuilder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfile(webApplicationBuilder.Configuration)));
 
-			webApplicationBuilder.Services.Configure<ApiBehaviorOptions>(options =>
-			{
-				options.InvalidModelStateResponseFactory = (actionContext) =>
-				{
-					var errors = actionContext.ModelState.Where(P => P.Value?.Errors.Count > 0)
-														  .SelectMany(P => P.Value.Errors)
-														  .Select(E => E.ErrorMessage)
-														  .ToList();
-					var response = new ApiValidationErrorResponse()
-					{
-						Errors = errors
-					};
-					return new BadRequestObjectResult(response);
-				};
-			});
+			webApplicationBuilder.Services.AddApplicationServices();
+
 			#endregion
 
 
@@ -106,8 +90,7 @@ namespace Talabat.APIs
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())
 			{
-				app.UseSwagger();
-				app.UseSwaggerUI();
+				app.UseSwaggerMiddleware();
 			}
 
 			//app.UseStatusCodePagesWithRedirects("/errors/{0}");
