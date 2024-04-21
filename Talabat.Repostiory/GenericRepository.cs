@@ -20,7 +20,7 @@ namespace Talabat.Repostiory
 			_dbContext = dbContext;
 		}
 
-		public async Task<IEnumerable<T>> GetAllAsync()
+		public async Task<IReadOnlyList<T>> GetAllAsync()
 		{
 			return await _dbContext.Set<T>().ToListAsync();
 		}
@@ -35,7 +35,7 @@ namespace Talabat.Repostiory
 			return await ApplySecification(spec).FirstOrDefaultAsync();
 		}
 
-		public async Task<IEnumerable<T>> GetAllWithSpecAsync(ISpecifications<T> spec)
+		public async Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecifications<T> spec)
 		{
 			return await ApplySecification(spec).ToListAsync();
 		}
