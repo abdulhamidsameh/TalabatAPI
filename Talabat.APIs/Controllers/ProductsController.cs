@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Errors;
+using Talabat.APIs.Helper;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Specifications;
@@ -30,15 +31,17 @@ namespace Talabat.APIs.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecParms specParms)
+		public async Task<ActionResult<IReadOnlyList<Pagination<ProductToReturnDto>>>> GetProducts([FromQuery] ProductSpecParms specParms)
 		{
 			var spec = new ProductWithBrandAndCategorySpecifications(specParms);
 			var products = await _productRepo.GetAllWithSpecAsync(spec);
-			return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
+			var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
+
+			return Ok(new Pagination<ProductToReturnDto>(specParms.PageIndex, specParms.PageSize, spec.Count, data));
 		}
 
-		[ProducesResponseType(typeof(ProductToReturnDto),StatusCodes.Status200OK)]
-		[ProducesResponseType(typeof(ApiResponse),StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProductToReturnDto), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
 		[HttpGet("{id}")]
 		public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
 		{

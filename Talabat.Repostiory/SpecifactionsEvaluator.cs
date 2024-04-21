@@ -23,6 +23,7 @@ namespace Talabat.Repostiory
 			else if(spec.OrderByDesc is not null)
 				query = query.OrderByDescending(spec.OrderByDesc);
 
+			spec.Count = query.Count();
 
 			if(spec.IsPaginationEnabled)
 				query = query.Skip(spec.Skip).Take(spec.Take);

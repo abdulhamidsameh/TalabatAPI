@@ -20,5 +20,6 @@ namespace Talabat.Core.Specifications
 		public int Take { get; set; }
 		public bool IsPaginationEnabled { get; set; }
 
-	}
+        public int Count { get; set; }
+    }
 }
