@@ -17,7 +17,10 @@ namespace Talabat.APIs
 {
 	// Onion Architecture Layers Naming
 
-	//In-Memory Database and Redis
+	// In-Memory Database and Redis
+
+	// Connect to Redis Server using Redily
+
 	public class Program
 	{
 		public static async Task Main(string[] args)
