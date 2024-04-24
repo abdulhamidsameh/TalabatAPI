@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using System.Net;
 using System.Text.Json;
 using Talabat.APIs.Errors;
@@ -15,6 +16,11 @@ using Talabat.Repostiory.Data;
 namespace Talabat.APIs
 {
 	// Onion Architecture Layers Naming
+
+	// In-Memory Database and Redis
+
+	// Connect to Redis Server using Redily
+
 	public class Program
 	{
 		public static async Task Main(string[] args)
@@ -28,13 +34,19 @@ namespace Talabat.APIs
 			webApplicationBuilder.Services.AddControllers();
 
 			webApplicationBuilder.Services.AddSwaggerServices();
-		
+
 			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
 			{
 				options.UseLazyLoadingProxies().UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
 			webApplicationBuilder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfile(webApplicationBuilder.Configuration)));
+
+			webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
+			{
+				var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis");
+				return ConnectionMultiplexer.Connect(connection);
+			});
 
 			webApplicationBuilder.Services.AddApplicationServices();
 

@@ -15,6 +15,8 @@ namespace Talabat.APIs.Helper
 				.ForMember(d => d.Brand, O => O.MapFrom(s => s.Brand.Name))
 				.ForMember(d => d.Category, O => O.MapFrom(s => s.Category.Name))
 				.ForMember(P => P.PictureUrl, O => O.MapFrom(S => $"{_configuration["ApiBaseUrl"]}/{S.PictureUrl}"));
+			CreateMap<CustomerBasketDto, CustomerBasket>();
+			CreateMap<BasketItemDto, BasketItem>();
 		}
 	}
 }
