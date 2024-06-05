@@ -11,6 +11,7 @@ using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repostiory;
+using Talabat.Repostiory._Identity;
 using Talabat.Repostiory.Data;
 
 namespace Talabat.APIs
@@ -48,6 +49,12 @@ namespace Talabat.APIs
 				return ConnectionMultiplexer.Connect(connection);
 			});
 
+			webApplicationBuilder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+			{
+				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
+			});
+
+
 			webApplicationBuilder.Services.AddApplicationServices();
 
 			#endregion
@@ -58,6 +65,7 @@ namespace Talabat.APIs
 			using var scope = app.Services.CreateScope();
 			var services = scope.ServiceProvider;
 			var _dbContext = services.GetRequiredService<StoreContext>();
+			var _IdentitydbContext = services.GetRequiredService<ApplicationIdentityDbContext>();
 			// Ask CLR for Creating Object From DbContext Explicitly
 
 			var loggerFactory = services.GetRequiredService<ILoggerFactory>();
@@ -66,6 +74,7 @@ namespace Talabat.APIs
 			try
 			{
 				await _dbContext.Database.MigrateAsync();
+				await _IdentitydbContext.Database.MigrateAsync();
 				await StoreContextSeed.SeedAsync(_dbContext);
 			}
 			catch (Exception ex)
