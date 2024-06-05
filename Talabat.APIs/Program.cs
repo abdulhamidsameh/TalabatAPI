@@ -12,10 +12,11 @@ using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities;
 using Talabat.Core.Entities.identity;
 using Talabat.Core.Repositories.Contract;
+using Talabat.Core.Service.Contract;
 using Talabat.Repostiory;
 using Talabat.Repostiory._Identity;
 using Talabat.Repostiory.Data;
-
+using Talabat.Service.AuthSrervice;
 namespace Talabat.APIs
 {
 	// Onion Architecture Layers Naming
@@ -59,6 +60,7 @@ namespace Talabat.APIs
 				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
 			});
 
+			webApplicationBuilder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
 
 			webApplicationBuilder.Services.AddApplicationServices();
 
