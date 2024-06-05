@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
@@ -30,6 +32,7 @@ namespace Talabat.APIs.Controllers
 			_mapper = mapper;
 		}
 
+		[Authorize]
 		[HttpGet]
 		public async Task<ActionResult<IReadOnlyList<Pagination<ProductToReturnDto>>>> GetProducts([FromQuery] ProductSpecParms specParms)
 		{

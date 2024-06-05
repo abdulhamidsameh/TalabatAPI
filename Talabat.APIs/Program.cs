@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using Talabat.APIs.Errors;
 using Talabat.APIs.Extensions;
@@ -35,8 +38,28 @@ namespace Talabat.APIs
 
 			// Add services to the container.
 
-			webApplicationBuilder.Services.AddIdentity<ApplicationUser,IdentityRole>()
+			webApplicationBuilder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+			webApplicationBuilder.Services.AddAuthentication(options =>
+			{
+				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			})
+				.AddJwtBearer(options =>
+				{
+					options.TokenValidationParameters = new TokenValidationParameters()
+					{
+						ValidateIssuer = true,
+						ValidIssuer = webApplicationBuilder.Configuration["JWT:ValidIssuer"],
+						ValidateAudience = true,
+						ValidAudience = webApplicationBuilder.Configuration["JWT:ValidAudence"],
+						ValidateIssuerSigningKey = true,
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(webApplicationBuilder.Configuration["JWT:AuthKey"] ?? string.Empty)),
+						ValidateLifetime = true,
+						ClockSkew = TimeSpan.Zero
+					};
+				});
 
 			webApplicationBuilder.Services.AddControllers();
 
@@ -83,7 +106,7 @@ namespace Talabat.APIs
 				await _dbContext.Database.MigrateAsync();
 				await _IdentitydbContext.Database.MigrateAsync();
 				await StoreContextSeed.SeedAsync(_dbContext);
-				var _userManger = services.GetRequiredService<UserManager<ApplicationUser>>();	
+				var _userManger = services.GetRequiredService<UserManager<ApplicationUser>>();
 				await ApplicationIdentityDataSeed.SeedUserAsync(_userManger);
 			}
 			catch (Exception ex)
@@ -129,6 +152,9 @@ namespace Talabat.APIs
 			app.UseHttpsRedirection();
 
 			app.UseStaticFiles();
+
+			app.UseAuthentication();
+			app.UseAuthorization();
 
 
 			app.MapControllers();
