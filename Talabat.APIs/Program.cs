@@ -1,18 +1,26 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using Talabat.APIs.Errors;
 using Talabat.APIs.Extensions;
 using Talabat.APIs.Helper;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities;
+using Talabat.Core.Entities.identity;
 using Talabat.Core.Repositories.Contract;
+using Talabat.Core.Service.Contract;
 using Talabat.Repostiory;
+using Talabat.Repostiory._Identity;
 using Talabat.Repostiory.Data;
-
+using Talabat.Service.AuthSrervice;
 namespace Talabat.APIs
 {
 	// Onion Architecture Layers Naming
@@ -31,7 +39,34 @@ namespace Talabat.APIs
 
 			// Add services to the container.
 
-			webApplicationBuilder.Services.AddControllers();
+			webApplicationBuilder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+				.AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+			webApplicationBuilder.Services.AddAuthentication(options =>
+			{
+				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			})
+				.AddJwtBearer(options =>
+				{
+					options.TokenValidationParameters = new TokenValidationParameters()
+					{
+						ValidateIssuer = true,
+						ValidIssuer = webApplicationBuilder.Configuration["JWT:ValidIssuer"],
+						ValidateAudience = true,
+						ValidAudience = webApplicationBuilder.Configuration["JWT:ValidAudence"],
+						ValidateIssuerSigningKey = true,
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(webApplicationBuilder.Configuration["JWT:AuthKey"] ?? string.Empty)),
+						ValidateLifetime = true,
+						ClockSkew = TimeSpan.Zero
+					};
+				});
+
+			webApplicationBuilder.Services.AddControllers()
+				.AddNewtonsoftJson(options =>
+				{
+					options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+				});
 
 			webApplicationBuilder.Services.AddSwaggerServices();
 
@@ -48,6 +83,13 @@ namespace Talabat.APIs
 				return ConnectionMultiplexer.Connect(connection);
 			});
 
+			webApplicationBuilder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+			{
+				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
+			});
+
+			webApplicationBuilder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
+
 			webApplicationBuilder.Services.AddApplicationServices();
 
 			#endregion
@@ -58,6 +100,7 @@ namespace Talabat.APIs
 			using var scope = app.Services.CreateScope();
 			var services = scope.ServiceProvider;
 			var _dbContext = services.GetRequiredService<StoreContext>();
+			var _IdentitydbContext = services.GetRequiredService<ApplicationIdentityDbContext>();
 			// Ask CLR for Creating Object From DbContext Explicitly
 
 			var loggerFactory = services.GetRequiredService<ILoggerFactory>();
@@ -66,7 +109,10 @@ namespace Talabat.APIs
 			try
 			{
 				await _dbContext.Database.MigrateAsync();
+				await _IdentitydbContext.Database.MigrateAsync();
 				await StoreContextSeed.SeedAsync(_dbContext);
+				var _userManger = services.GetRequiredService<UserManager<ApplicationUser>>();
+				await ApplicationIdentityDataSeed.SeedUserAsync(_userManger);
 			}
 			catch (Exception ex)
 			{
@@ -111,6 +157,9 @@ namespace Talabat.APIs
 			app.UseHttpsRedirection();
 
 			app.UseStaticFiles();
+
+			app.UseAuthentication();
+			app.UseAuthorization();
 
 
 			app.MapControllers();
