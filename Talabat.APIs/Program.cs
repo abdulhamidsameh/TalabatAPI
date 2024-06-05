@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -9,6 +10,7 @@ using Talabat.APIs.Extensions;
 using Talabat.APIs.Helper;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities;
+using Talabat.Core.Entities.identity;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repostiory;
 using Talabat.Repostiory._Identity;
@@ -31,6 +33,9 @@ namespace Talabat.APIs
 			#region Configre Services
 
 			// Add services to the container.
+
+			webApplicationBuilder.Services.AddIdentity<ApplicationUser,IdentityRole>()
+				.AddEntityFrameworkStores<ApplicationIdentityDbContext>();
 
 			webApplicationBuilder.Services.AddControllers();
 
@@ -76,6 +81,8 @@ namespace Talabat.APIs
 				await _dbContext.Database.MigrateAsync();
 				await _IdentitydbContext.Database.MigrateAsync();
 				await StoreContextSeed.SeedAsync(_dbContext);
+				var _userManger = services.GetRequiredService<UserManager<ApplicationUser>>();	
+				await ApplicationIdentityDataSeed.SeedUserAsync(_userManger);
 			}
 			catch (Exception ex)
 			{
