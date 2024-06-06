@@ -1,4 +1,10 @@
-﻿namespace Talabat.Core.Entities.identity
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Talabat.Core.Entities.Identity
 {
 	public class Address : BaseEntity
 	{
@@ -7,7 +13,8 @@
 		public string Street { get; set; } = null!;
 		public string City { get; set; } = null!;
 		public string Country { get; set; } = null!;
-		public string ApplicationUserId { get; set; } = null!; // FK
-		public ApplicationUser User { get; set; } = null!; // Navigational Property [ONE]
-	}
+        public ApplicationUser User { get; set; } = null!; //Navigational property [one]
+        public string ApplicationUserId { get; set; } //Foreign key
+
+    }
 }

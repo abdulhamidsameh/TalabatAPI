@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.Errors;
-using Talabat.Repostiory.Data;
+using Talabat.Infrastructure._Data;
 
 namespace Talabat.APIs.Controllers
 {
+    [Route("api/[controller]")]
+	[ApiController]
 	public class BuggyController : BaseApiController
 	{
 		private readonly StoreContext _dbContext;
@@ -13,41 +15,37 @@ namespace Talabat.APIs.Controllers
 		{
 			_dbContext = dbContext;
 		}
-
-		[HttpGet("notfound")] // GET: api/Buggy/notfound
+		[HttpGet("notfound")]
 		public ActionResult GetNotFoundRequest()
 		{
 			var product = _dbContext.Products.Find(100);
-			if (product is null)
+			if (product is null )
 				return NotFound(new ApiResponse(404));
-
-			else
-				return Ok(product);
+			return Ok(product);
 		}
 
-		[HttpGet("servererror")] // GET : api/Buggy/servererror
-		public ActionResult GetServerErrorRequest()
+		[HttpGet("servererror")]
+		public ActionResult GetServerError()
 		{
 			var product = _dbContext.Products.Find(100);
-			var productToReturn = product?.ToString(); // Will throw Exception [Null Reference Exception]
-
+			var productToReturn = product.ToString();
 			return Ok(productToReturn);
 		}
 
-		[HttpGet("badrequest")] // GET : api/Buggy/badrequest
+		[HttpGet("badrequest")]
 		public ActionResult GetBadRequest()
 		{
 			return BadRequest(new ApiResponse(400));
 		}
 
-		[HttpGet("badrequest/{id}")] // GET : api/Buggy/badrequest/5
+		[HttpGet("badrequest/{id}")]
 		public ActionResult GetBadRequest(int id)
 		{
 			return Ok();
 		}
 
-		[HttpGet("unautharized")]
-		public ActionResult GetUnautharizedResponse()
+		[HttpGet("/unauthorized")]
+		public ActionResult GetUnauthorizedError()
 		{
 			return Unauthorized(new ApiResponse(401));
 		}

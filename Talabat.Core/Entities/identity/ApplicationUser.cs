@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Talabat.Core.Entities.identity
+namespace Talabat.Core.Entities.Identity
 {
-	public class ApplicationUser : IdentityUser
+	public class ApplicationUser :IdentityUser
 	{
 		public string DisplayName { get; set; } = null!;
-        public Address? Address { get; set; } = null!;
-    }
+        public  Address? Address { get; set; } = null; //Navigational property [one]
+	}
 }

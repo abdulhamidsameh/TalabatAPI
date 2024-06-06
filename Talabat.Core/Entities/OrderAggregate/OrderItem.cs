@@ -12,14 +12,15 @@ namespace Talabat.Core.Entities.OrderAggregate
         {
             
         }
-        public OrderItem(ProductItemOrderd product, decimal price, int quantity)
+
+		public OrderItem(ProductItemOrder product, decimal price, int quantity)
 		{
 			Product = product;
 			Price = price;
 			Quantity = quantity;
 		}
 
-		public ProductItemOrderd Product { get; set; } = null!;
+		public ProductItemOrder Product { get; set; } = null!;
         public decimal Price { get; set; }
         public int Quantity { get; set; }
     }

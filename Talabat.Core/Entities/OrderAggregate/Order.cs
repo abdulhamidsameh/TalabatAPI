@@ -9,31 +9,32 @@ namespace Talabat.Core.Entities.OrderAggregate
 {
 	public class Order : BaseEntity
 	{
-        public Order()
-        {
-            
-        }
-
-		public Order(string bayerEmail, Address shippingAddress, DeliveryMethod? deliveryMethod, ICollection<OrderItem> items, decimal subTotal)
+        private Order()
+        {}
+        public Order(string buyerEmail, Address shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subtotal , string paymentIntentId)
 		{
-			BayerEmail = bayerEmail;
+			BuyerEmail = buyerEmail;
 			ShippingAddress = shippingAddress;
-			DeliveryMethod = deliveryMethod;
+			DeliveryMethod= deliveryMethod;
 			Items = items;
-			SubTotal = subTotal;
+			Subtotal = subtotal;
+			PaymentIntentId = paymentIntentId;
 		}
 
-		public string BayerEmail { get; set; } = null!;
+		public string BuyerEmail { get; set; } = null!;
 		public DateTimeOffset OrderDate { get; set; } = DateTimeOffset.UtcNow;
 		public OrderStatus Status { get; set; } = OrderStatus.Pending;
 		public Address ShippingAddress { get; set; } = null!;
-        //public int DeliveryMethodId { get; set; } //FK
-        public virtual DeliveryMethod? DeliveryMethod { get; set; } = null!; // Navigational Property
-        public virtual ICollection<OrderItem> Items { get; set; } = new HashSet<OrderItem>();
-        public decimal SubTotal { get; set; }
-		public decimal GetTotal()
-			=> SubTotal + DeliveryMethod.Cost;
-		public string PaymentIntentId { get; set; } = string.Empty;
+        public int? DeliveryMethodId { get; set; } //Foreign key 
+        public  DeliveryMethod? DeliveryMethod { get; set; } //Navigational property one
+		public ICollection<OrderItem> Items { get; set;} = new HashSet<OrderItem>();
+        public decimal Subtotal { get; set; } //Total cost - shipping fees
+        public String PaymentIntentId { get; set; } = string.Empty;
 
-    }
+        //[NotMapped]
+        //public decimal Total => DeliveryMethod.Cost + Subtotal; 
+
+        public decimal GetTotal() => DeliveryMethod.Cost + Subtotal;
+	}
 }
+ 
