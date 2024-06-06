@@ -5,17 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Talabat.Core.Entities.identity;
+using Talabat.Core.Entities.Identity;
 
-namespace Talabat.Repostiory._Identity
+namespace Talabat.Infrastructure._Identity
 {
 	public class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser>
 	{
-        public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options)
-            : base(options) 
+		//private readonly DbContextOptions<ApplicationIdentityDbContext> _options;
+
+		public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options):base(options)
         {
-            
-        }
+			//_options = options;
+		}
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
