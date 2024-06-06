@@ -24,7 +24,7 @@ namespace Talabat.Service.OrderService
 			_basketRepo = basketRepo;
 			_unitOfWork = unitOfWork;
 		}
-        public async Task<Order> CreateOrderAsync(string bayerEmail, string basketId, int deliveryMethodId, Address shippingAddress)
+        public async Task<Order?> CreateOrderAsync(string bayerEmail, string basketId, int deliveryMethodId, Address shippingAddress)
 		{
 			var basket = await _basketRepo.GetBasketAsync(basketId);
 			var orderItems = new List<OrderItem>();
@@ -52,6 +52,9 @@ namespace Talabat.Service.OrderService
 				);
 
 			_unitOfWork.Repository<Order>().Add(order);
+			var result = await _unitOfWork.CompleteAsync();
+			if (result <= 0) return null!;
+
 			return order;
 
 		}
