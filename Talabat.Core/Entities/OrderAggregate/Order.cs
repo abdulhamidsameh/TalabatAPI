@@ -9,6 +9,20 @@ namespace Talabat.Core.Entities.OrderAggregate
 {
 	public class Order : BaseEntity
 	{
+        public Order()
+        {
+            
+        }
+
+		public Order(string bayerEmail, Address shippingAddress, DeliveryMethod? deliveryMethod, ICollection<OrderItem> items, decimal subTotal)
+		{
+			BayerEmail = bayerEmail;
+			ShippingAddress = shippingAddress;
+			DeliveryMethod = deliveryMethod;
+			Items = items;
+			SubTotal = subTotal;
+		}
+
 		public string BayerEmail { get; set; } = null!;
 		public DateTimeOffset OrderDate { get; set; } = DateTimeOffset.UtcNow;
 		public OrderStatus Status { get; set; } = OrderStatus.Pending;
