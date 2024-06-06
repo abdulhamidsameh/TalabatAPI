@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Talabat.Core;
 using Talabat.Core.Entities.OrderAggregate;
+using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Service.Contract;
 
 namespace Talabat.Service.OrderService
 {
 	public class OrderService : IOrderService
 	{
-        public OrderService()
+		private readonly IBasketRepository _basketRepo;
+		private readonly IUnitOfWork _unitOfWork;
+
+		public OrderService(
+			IBasketRepository basketRepo,
+			IUnitOfWork unitOfWork
+			)
         {
-            
-        }
+			_basketRepo = basketRepo;
+			_unitOfWork = unitOfWork;
+		}
         public Task<Order> CreateOrderAsync(string bayerEmail, string basketId, string deliveryMethodId, Address shippingAddress)
 		{
 			throw new NotImplementedException();

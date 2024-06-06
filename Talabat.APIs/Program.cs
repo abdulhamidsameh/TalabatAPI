@@ -13,6 +13,7 @@ using Talabat.APIs.Errors;
 using Talabat.APIs.Extensions;
 using Talabat.APIs.Helper;
 using Talabat.APIs.Middlewares;
+using Talabat.Core;
 using Talabat.Core.Entities;
 using Talabat.Core.Entities.identity;
 using Talabat.Core.Repositories.Contract;
@@ -21,6 +22,7 @@ using Talabat.Repostiory;
 using Talabat.Repostiory._Identity;
 using Talabat.Repostiory.Data;
 using Talabat.Service.AuthSrervice;
+using Talabat.Service.OrderService;
 namespace Talabat.APIs
 {
 	// Onion Architecture Layers Naming
@@ -91,6 +93,10 @@ namespace Talabat.APIs
 			webApplicationBuilder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
 
 			webApplicationBuilder.Services.AddApplicationServices();
+
+			webApplicationBuilder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+
+			webApplicationBuilder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
 
 			#endregion
 

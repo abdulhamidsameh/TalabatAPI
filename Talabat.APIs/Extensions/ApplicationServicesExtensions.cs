@@ -14,9 +14,9 @@ namespace Talabat.APIs.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
 		{
 
-			services.AddScoped(
-				typeof(IGenricRepository<>), typeof(GenericRepository<>)
-			);
+			//services.AddScoped(
+			//	typeof(IGenricRepository<>), typeof(GenericRepository<>)
+			//);
 			//webApplicationBuilder.Services.AddScoped<IGenricRepository<Product>, GenericRepository<Product>>();
 
 

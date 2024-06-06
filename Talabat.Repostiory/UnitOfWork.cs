@@ -10,7 +10,7 @@ using Talabat.Repostiory.Data;
 
 namespace Talabat.Repostiory
 {
-	internal class UnitOfWork : IUnitOfWork
+	public class UnitOfWork : IUnitOfWork
 	{
 		private readonly StoreContext _dbContext;
 
